@@ -16,4 +16,13 @@ class ParameterException extends HttpException {
     }
 }
 
+class RegisterException extends HttpException {
+    constructor(code, errorCode, msg) {
+        super()
+        this.code = 400
+        this.errorCode = errorCode || -1
+        this.msg = msg || "注册失败"
+    }
+}
+
 module.exports = {HttpException, ParameterException}
