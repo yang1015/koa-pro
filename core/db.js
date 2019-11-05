@@ -28,7 +28,7 @@ const sequelize = new Sequelize(dbName, user, password, {
 }) 
 
 sequelize.sync({
-    force: false // true = 自动新增参数并刷新数据库 =重新删除表再建一次新的 不推荐这么做
+    force: true // true = 自动新增参数并刷新数据库 =重新删除表再建一次新的 不推荐这么做
 })
 
 module.exports = {

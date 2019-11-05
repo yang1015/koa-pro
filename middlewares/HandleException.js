@@ -6,7 +6,8 @@ const handleException = async function(ctx, next) {
         await next()
     } catch(error) {
         console.log(global.config.env)
-        // if (global.config.env === "dev" && !error instanceof HttpException) throw error // 不需要else 因为只要throw了后面就都不会继续执行了
+        console.log(error)
+        if (global.config.env === "dev" && !error instanceof HttpException) throw error // 不需要else 因为只要throw了后面就都不会继续执行了
         if (error instanceof HttpException) { // 只要是这个类型的 说明就是已知错误
             ctx.body = {
                 errorCode: error.errorCode,

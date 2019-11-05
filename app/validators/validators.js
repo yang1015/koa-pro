@@ -13,10 +13,18 @@ class PositiveIntValidator extends LinValidator{
 class RegisterValidator extends LinValidator {
     constructor() {
         super()
-        console.log(this)
-        this.mobile = [
-            new Rule("isMobilePhone", "手机号不正确") //locale如何添加
-        ]
+        // this.mobile = [
+        //     new Rule("isMobilePhone", "手机号不正确") //locale如何添加
+        // ]
+        // this.openid = [
+        //     new Rule("isLength", "openid过短", {min: 10})
+        // ]
+    }
+
+    validateXXX(vals) {
+        // vals.body.xxx参数
+        // 必须以validate开头 vals是用户传过来的所有参数
+        // 这里抛出普通error即可 不需要抛出httpException
     }
 }
 

@@ -15,14 +15,26 @@ const router = new Router({
     prefix: '/v1/user'
 });
 
+const { User } = require('../../models/user.js')
+
 
 router.post('/register', async (ctx) => {
     // 路径
     // 校验参数是否正确
     // { nickname, openid, mobile, avatarUrl, }
-    console.log("传进来的：")
-    console.log(ctx);
-    const res = new RegisterValidator().validate(ctx)
+    const res = new RegisterValidator().validate(ctx) 
+    // 如果上面报错 直接就throw了 不要担心
+
+    const newUser = {
+        openid: res.get('body.openid'),
+        nickname: res.get('body.nickname'),
+        mobile: res.get('body.mobile'),
+        age: res.get('body.age'),
+        city: res.get('body.city'),
+        avatarurl: res.get('body.avatarurl')
+    } 
+
+    User.create(newUser)
     // 返回ctx.body
 })
 
