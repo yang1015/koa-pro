@@ -1,5 +1,5 @@
 /**
- * Lin-Validator v1
+ * Lin-Validator v2
  * 作者：7七月
  * 微信公众号：林间有风
  */
@@ -65,7 +65,7 @@ class LinValidator {
         return false
     }
 
-    validate(ctx, alias = {}) {
+    async validate(ctx, alias = {}) {
         this.alias = alias
         let params = this._assembleAllParams(ctx)
         this.data = cloneDeep(params)
@@ -76,33 +76,43 @@ class LinValidator {
         })
 
         const errorMsgs = []
+      
         // const map = new Map(memberKeys)
         for (let key of memberKeys) {
-            const result = this._check(key, alias)
+       
+            const result = await this._check(key, alias)
+
+           
             if (!result.success) {
                 errorMsgs.push(result.msg)
             }
         }
-       
+        
         if (errorMsgs.length != 0) {
-            throw new ParameterException(400, 401, errorMsgs)
+            throw new ParameterException(errorMsgs)
         }
         ctx.v = this
         return this
     }
 
-    _check(key, alias = {}) {
+    async _check(key, alias = {}) {
         const isCustomFunc = typeof (this[key]) == 'function' ? true : false
         let result;
+      
+        // 自定义函数
         if (isCustomFunc) {
+          
             try {
-                this[key](this.data)
+                await this[key](this.data)
+                
                 result = new RuleResult(true)
             } catch (error) {
+              
                 result = new RuleResult(false, error.msg || error.message || '参数错误')
             }
             // 函数验证
         } else {
+           
             // 属性验证, 数组，内有一组Rule
             const rules = this[key]
             const ruleField = new RuleField(rules)
@@ -111,7 +121,7 @@ class LinValidator {
             const param = this._findParam(key)
 
             result = ruleField.validate(param.value)
-
+         
             if (result.pass) {
                 // 如果参数路径不存在，往往是因为用户传了空值，而又设置了默认值
                 if (param.path.length == 0) {
@@ -121,13 +131,18 @@ class LinValidator {
                 }
             }
         }
+      
+        
         if (!result.pass) {
             const msg = `${isCustomFunc ? '' : key}${result.msg}`
+           
             return {
                 msg: msg,
                 success: false
             }
         }
+
+       
         return {
             msg: 'ok',
             success: true
@@ -173,6 +188,7 @@ class LinValidator {
 
 class RuleResult {
     constructor(pass, msg = '') {
+       
         Object.assign(this, {
             pass,
             msg
@@ -197,9 +213,10 @@ class Rule {
     }
 
     validate(field) {
-        if (this.name == 'optional')
-            return new RuleResult(true)
+      
+        if (this.name == 'isOptional') return new RuleResult(true)
         if (!validator[this.name](field + '', ...this.params)) {
+        
             return new RuleResult(false, this.msg || this.message || '参数错误')
         }
         return new RuleResult(true, '')
@@ -208,10 +225,12 @@ class Rule {
 
 class RuleField {
     constructor(rules) {
+       
         this.rules = rules
     }
 
     validate(field) {
+      
         if (field == null) {
             // 如果字段为空
             const allowEmpty = this._allowEmpty()
@@ -223,9 +242,13 @@ class RuleField {
             }
         }
 
+    
         const filedResult = new RuleFieldResult(false)
+
+    
         for (let rule of this.rules) {
             let result = rule.validate(field)
+        
             if (!result.pass) {
                 filedResult.msg = result.msg
                 filedResult.legalValue = null
@@ -237,6 +260,7 @@ class RuleField {
     }
 
     _convert(value) {
+       
         for (let rule of this.rules) {
             if (rule.name == 'isInt') {
                 return parseInt(value)
@@ -253,7 +277,7 @@ class RuleField {
 
     _allowEmpty() {
         for (let rule of this.rules) {
-            if (rule.name == 'optional') {
+            if (rule.name == 'isOptional') {
                 return true
             }
         }
@@ -263,7 +287,7 @@ class RuleField {
     _hasDefault() {
         for (let rule of this.rules) {
             const defaultValue = rule.params[0]
-            if (rule.name == 'optional') {
+            if (rule.name == 'isOptional') {
                 return defaultValue
             }
         }

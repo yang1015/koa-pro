@@ -5,10 +5,14 @@ const handleException = async function(ctx, next) {
     try {
         await next()
     } catch(error) {
-        console.log(global.config.env)
-        console.log(error)
-        if (global.config.env === "dev" && !error instanceof HttpException) throw error // 不需要else 因为只要throw了后面就都不会继续执行了
-        if (error instanceof HttpException) { // 只要是这个类型的 说明就是已知错误
+        const env = global.config.env
+        const isHttpException = error instanceof HttpException
+        console.log(`${env}  ${isHttpException}`)
+        // 生产环境 且不是自定义error的话 要释放程序的报错
+        if (env === "dev" && !isHttpException) throw error  // 不需要else 因为只要throw了后面就都不会继续执行了
+
+        // 自定义error 
+        if (isHttpException) { 
             ctx.body = {
                 errorCode: error.errorCode,
                 message: error.msg,

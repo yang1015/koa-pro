@@ -1,7 +1,6 @@
 const { 
     HttpException,
-    ParameterException,
-    RegisterException
+    ParameterException
  } = require('../../../core/HttpException.js') 
 
 
@@ -22,8 +21,13 @@ router.post('/register', async (ctx) => {
     // 路径
     // 校验参数是否正确
     // { nickname, openid, mobile, avatarUrl, }
-    const res = new RegisterValidator().validate(ctx) 
+   
+    // RegisterValidator相当于守门员 如果上面没有收住 企图将重复数据插入数据库 那么数据库就会报错
+    // 在使用自定义validator的时候 里面也可能会自定义异步的操作 所以这里要await
+    const res = await new RegisterValidator().validate(ctx) 
+
     // 如果上面报错 直接就throw了 不要担心
+  
 
     const newUser = {
         openid: res.get('body.openid'),
@@ -33,8 +37,8 @@ router.post('/register', async (ctx) => {
         city: res.get('body.city'),
         avatarurl: res.get('body.avatarurl')
     } 
-
-    User.create(newUser)
+    let u = await User.create(newUser) // 不加await 返回的是一个promise 加await是对表达式求值
+    ctx.body = '没毛病'
     // 返回ctx.body
 })
 
