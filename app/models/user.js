@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') //
 
@@ -19,7 +20,12 @@ User.init({ // 两个参数 obj obj
     openid: { // 最好是unionid（如果要公众号+小程序） 不然只有小程序里是唯一的
         type: Sequelize.STRING,
         unique: true,
-        primaryKey: true // 主键 不能重复 不能为空
+        primaryKey: true, // 主键 不能重复 不能为空
+        set(val) {
+            const salt = bcrypt.genSaltSync(10) // 10是密码加密所需要的成本
+            const openid = bcrypt.hashSync(val, salt)
+            this.setDataValue("openid", openid) // this是表示model里面的setDataValue方法
+        }
     },
     mobile: {
         type: Sequelize.INTEGER,

@@ -16,6 +16,16 @@ class ParameterException extends HttpException {
     }
 }
 
+class Success extends HttpException {
+    constructor(msg, errorCode) {
+        super()
+        // 200是查询成功 201是操作成功
+        this.code = 201
+        this.errorCode = errorCode || 0
+        this.msg = msg || "成功"
+    }
+}
+
  
 
-module.exports = {HttpException, ParameterException}
+module.exports = {HttpException, ParameterException, Success}

@@ -1,6 +1,8 @@
+
 const { 
     HttpException,
-    ParameterException
+    ParameterException,
+    Success
  } = require('../../../core/HttpException.js') 
 
 
@@ -27,8 +29,7 @@ router.post('/register', async (ctx) => {
     const res = await new RegisterValidator().validate(ctx) 
 
     // 如果上面报错 直接就throw了 不要担心
-  
-
+   
     const newUser = {
         openid: res.get('body.openid'),
         nickname: res.get('body.nickname'),
@@ -38,7 +39,8 @@ router.post('/register', async (ctx) => {
         avatarurl: res.get('body.avatarurl')
     } 
     let u = await User.create(newUser) // 不加await 返回的是一个promise 加await是对表达式求值
-    ctx.body = '没毛病'
+
+    throw new Success('注册成功')
     // 返回ctx.body
 })
 
