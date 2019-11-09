@@ -1,13 +1,16 @@
 const Router = require('koa-router')
-const router = new Router()
-const { TokenValidator }  = require('../../validators/validators.js')
+const router = new Router({
+    prefix: '/v1/token'
+})
+const { TokenValidator, TokenVerifyValidator }  = require('../../validators/validators.js')
 const { Success } = require('../../../core/HttpException')
 const { LoginType } = require('./../../helpers/enum.js')
 const { generateToken } = require('./../../../core/util.js')
 const { User } = require('./../../models/user.js')
 const { WxManager } = require('./../../services/wx.js')
+const { Auth } = require('../../../middlewares/auth.js')
 
-router.post('/v1/token', async(ctx) => {
+router.post('/', async(ctx) => {
         // 先写地址+请求方式
         // 再校验参数 
         // 如果是新增数据 就把数据收集起来用model搞一哈生成一个新实例放进数据库
@@ -18,7 +21,7 @@ router.post('/v1/token', async(ctx) => {
         // 需要根据类型 去再次获取这个用户实例 再生成token返回给他
         const data = v.get('body')
         const type = data.type
-        const token = await getUserReturnToken(type, data)
+        const token = await getToken(type, data)
      
         ctx.body = {
             token: token
@@ -26,42 +29,33 @@ router.post('/v1/token', async(ctx) => {
     }
 )
 
+router.post('/verify', async(ctx) => {
+    const v = await new TokenVerifyValidator().validate(ctx)
+    // 如果这个是get方法的话 参数不能用body.xx这种
+    const token = v.get('body.token')
+    const res = await Auth.verifyToken(token)
+    ctx.body = {
+        result: res
+    }
+    
+})
+
 // 根据不同登录方式获取不同的token
-async function getUserReturnToken(type, data) {
+async function getToken(type, data) {
     switch (type) {
         case LoginType.ACCPWD_LOGIN:
             break
-        case LoginType.WECHAT_LOGIN:
-            // 用微信接口返回
-            console.log("传递code: " + data.code)
-            const openId = await getTokenWechatLogIn(data.code)
-            return openId
+        case LoginType.WECHAT_LOGIN: // 用微信接口返回
+            const openId = await WxManager.code2Session(data.account) // 前端发来的code去获取openId
+            const user = await User.getUserByOpenId(openId) // 拿到openId所以应的这个用户
+            return await generateToken(user.account, type) // 给这个用户当前登陆生成token令牌
             break
         case LoginType.MOBILE_LOGIN:
             // 因为在Validator里已经判断过mobile+openid是否正确匹配了
             // 能过validator就说明肯定没问题 所以只用mobile去获取该user就够了
-            const user = await User.findOne({ // 所有sequelize的操作都是异步的
-                where: {
-                    mobile: data.mobile // 看数据库里是否存在
-                }
-            })
-            return getTokenMobileLogIn(user)     
+            const mobileUser = await User.getUserByMobile(mobile)
+            return await generateToken(mobileUser.id, 2)
         }
-}
-
-// 手机号登录方式
-async function getTokenMobileLogIn(user) {
-    console.log("user.id: " + user.id)
-    const token = await generateToken(user.id, 2)
-    console.log("generated: " + token)
-    await user.update({
-        token: token
-    })
-    return token
-}
-
-async function getTokenWechatLogIn(code) {
-    return await WxManager.code2Session(code) // code是前端传来的
 }
 
 module.exports = router // 一定不要忘记导出！！

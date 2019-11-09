@@ -3,6 +3,33 @@ const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') //
 
 class User extends Model {
+    constructor() {
+        super()
+    }
+
+    static async getUserByMobile(mobile) {
+        const user = await User.findOne({ // 所有sequelize的操作都是异步的
+            where: {
+                mobile
+            }
+        })
+        return user
+    }
+
+    static async getUserByOpenId(openId) {
+        const user = await User.findOne({ // 所有sequelize的操作都是异步的
+            where: {
+                openid: openId // 看数据库里是否存在
+            }
+        })
+        return user
+    }
+
+    static async registerNewUserByOpenId(openId) {
+        return await User.create({
+            openid: openId
+        })
+    }
 }
 
 User.init({ // 两个参数 obj obj

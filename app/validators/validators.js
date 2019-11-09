@@ -59,6 +59,9 @@ class TokenValidator extends LinValidator{
     // 登录方式使用枚举 必须在规定的方式之内
     constructor() {
         super() // 务必要先super!!!!
+        this.account = [
+            new Rule('isLength', 'account是必传项', {min: 1})
+        ]
     }
 
     async validateLoginType(vals) {
@@ -72,7 +75,7 @@ class TokenValidator extends LinValidator{
                 break
             case LoginType.WECHAT_LOGIN:
                 // 传入code和登录类型type
-                if (!vals.body.code) throw new Error('请传入code')
+               
                 break
             case LoginType.MOBILE_LOGIN:
                 // 微信登录 openid + mobile
@@ -88,8 +91,15 @@ class TokenValidator extends LinValidator{
                 break
             default :
         }
+    }
+}
 
-
+class TokenVerifyValidator extends LinValidator {
+    constructor() {
+        super()
+        this.token = [
+            new Rule('isLength', 'token必填', {mix: 1})
+        ]
     }
 }
 
@@ -99,16 +109,16 @@ class ReservationValidator extends LinValidator{
         // 查看我的所有预约
         // openid必填 token必填 
         this.openid = [
-            new Rule('isLength', 'openid长度不对', {mix: 2})
+            new Rule('isLength', 'openid必填', {mix: 1})
         ]
     } 
 }
-
 
 
 module.exports = { 
     PositiveIntValidator, 
     RegisterValidator, 
     TokenValidator, 
+    TokenVerifyValidator,
     ReservationValidator
 }
