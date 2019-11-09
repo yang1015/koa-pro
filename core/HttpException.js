@@ -16,16 +16,40 @@ class ParameterException extends HttpException {
     }
 }
 
+class ForbiddenException extends HttpException {
+    constructor(msg, errorCode, code) {
+        super()
+        this.code = code || 403
+        this.errorCode = errorCode || 10006
+        this.msg = msg || "没有权限访问"
+
+    }
+}
+
 class Success extends HttpException {
-    constructor(msg, errorCode) {
+    constructor(msg, errorCode, code) {
         super()
         // 200是查询成功 201是操作成功
-        this.code = 201
+        this.code = code || 201
         this.errorCode = errorCode || 0
         this.msg = msg || "成功"
     }
 }
 
- 
+class AuthFailedException extends HttpException {
+    constructor(msg, errorCode, code) {
+        super()
+        this.code = code || 202
+        this.errorCode = errorCode || 10007
+        this.msg = msg || "token验权失败"
+    }
+}
 
-module.exports = {HttpException, ParameterException, Success}
+module.exports = {
+    HttpException, 
+    ParameterException, 
+    ForbiddenException,
+    Success,
+    AuthFailedException
+    
+}

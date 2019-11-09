@@ -38,6 +38,8 @@ router.post('/register', async (ctx) => {
         city: res.get('body.city'),
         avatarurl: res.get('body.avatarurl')
     } 
+
+    console.log(newUser)
     let u = await User.create(newUser) // 不加await 返回的是一个promise 加await是对表达式求值
 
     throw new Success('注册成功')

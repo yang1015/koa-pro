@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs')
+// const bcrypt = require('bcryptjs')
 
 const { LinValidator, Rule} = require('../../core/lin-validator2.js')
 const { User } = require('../models/user.js')
@@ -26,12 +26,8 @@ class RegisterValidator extends LinValidator {
         ]
     }
 
-    // validateXXX(vals) {
-    //     // vals.body.xxx参数
-    //     // 必须以validate开头 vals是用户传过来的所有参数
-    //     // 这里抛出普通error即可 不需要抛出httpException
-    // }
-
+    // 必须以validate开头 vals是用户传过来的所有参数
+    // 这里抛出普通error即可 不需要抛出httpException
     // 手机号不能重复
     async validateMobile(vals) {
         // 先查数据库
@@ -63,23 +59,20 @@ class TokenValidator extends LinValidator{
     // 登录方式使用枚举 必须在规定的方式之内
     constructor() {
         super() // 务必要先super!!!!
-        // this.account = [
-        //     new Rule('isLength', '账号长度必须在6-12之间', {min: 6, max: 12})
-        // ]
     }
 
     async validateLoginType(vals) {
         const type = vals.body.type
         if (!type) throw new Error('type是必传项')
         if (!LoginType.checkLoginType(type)) throw new Error('类型不符')
-        
-        console.log(type)
-        console.log(LoginType.MOBILE_LOGIN)
+       
         // 判断特定登陆类型下提交的参数是否正确
         switch (type) {
             case LoginType.ACCPWD_LOGIN:
                 break
             case LoginType.WECHAT_LOGIN:
+                // 传入code和登录类型type
+                if (!vals.body.code) throw new Error('请传入code')
                 break
             case LoginType.MOBILE_LOGIN:
                 // 微信登录 openid + mobile
@@ -91,13 +84,7 @@ class TokenValidator extends LinValidator{
                 })
 
                 if (!user) throw new Error('找不到该手机号')
-
-                const correctOpenid = bcrypt.compareSync(
-                    vals.body.openid, user.openid
-                )
-                if (!correctOpenid) throw new Error('openid和mobile不匹配')
-                    
-               
+                if (vals.body.openid !== user.openid) throw new Error('openid和mobile不匹配')
                 break
             default :
         }
@@ -106,6 +93,22 @@ class TokenValidator extends LinValidator{
     }
 }
 
+class ReservationValidator extends LinValidator{
+    constructor() {
+        super()
+        // 查看我的所有预约
+        // openid必填 token必填 
+        this.openid = [
+            new Rule('isLength', 'openid长度不对', {mix: 2})
+        ]
+    } 
+}
 
 
-module.exports = { PositiveIntValidator, RegisterValidator, TokenValidator }
+
+module.exports = { 
+    PositiveIntValidator, 
+    RegisterValidator, 
+    TokenValidator, 
+    ReservationValidator
+}

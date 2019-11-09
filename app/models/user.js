@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs')
+// const bcrypt = require('bcryptjs')
 const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') //
 
@@ -18,23 +18,29 @@ User.init({ // 两个参数 obj obj
         autoIncrement: true, // 自动增长+1
     }, 
     openid: { // 最好是unionid（如果要公众号+小程序） 不然只有小程序里是唯一的
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(64),
         unique: true,
         primaryKey: true, // 主键 不能重复 不能为空
-        set(val) {
-            const salt = bcrypt.genSaltSync(10) // 10是密码加密所需要的成本
-            const openid = bcrypt.hashSync(val, salt)
-            this.setDataValue("openid", openid) // this是表示model里面的setDataValue方法
-        }
+        // set(val) {
+        //     const salt = bcrypt.genSaltSync(10) // 10是密码加密所需要的成本
+        //     const openid = bcrypt.hashSync(val, salt)
+        //     this.setDataValue("openid", openid) // this是表示model里面的setDataValue方法
+        // }
     },
     mobile: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(64),
         unique: true
     },
-    nickname: Sequelize.STRING,
+    nickname: {
+        type: Sequelize.STRING
+    },
     age: Sequelize.INTEGER,
     city: Sequelize.STRING,
-    avatarurl: Sequelize.STRING
+    avatarurl: Sequelize.STRING,
+    token: {
+        type: Sequelize.STRING(255),
+        unique: true
+    }
 }, { 
     sequelize: db, // 指定sequelize
     tableName: 'user' // 要小写。设置表的名字
