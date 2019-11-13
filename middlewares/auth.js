@@ -5,16 +5,14 @@ const jwt = require('jsonwebtoken')
 const { ForbiddenException } = require('../core/HttpException.js')
 
 class Auth {
-    constructor() {
-
-    }
-
     // 放在header里就需要调用m来获取header auth中的token.name
     get m() {
        return async (ctx, next) => {
            // 检测用户传过来的token
            // 获取请求时候附带的token
+
            const token = basicAuth(ctx.req)
+       
            let decode;
            if (!token || !token.name) throw new ForbiddenException("token为必填项")
            try {
@@ -26,6 +24,8 @@ class Auth {
                 } 
                 throw new ForbiddenException("token不合法")
            }
+
+           console.log(decode)
 
            ctx.auth = {
                uid: decode.uid,
@@ -44,8 +44,7 @@ class Auth {
              return true
         } catch(err) {
              return false 
-        }
-        
+        } 
     }
 }
 

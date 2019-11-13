@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-const router =  new Router({
+const router = new Router({
     prefix: '/v1/reservation'
 })
 
@@ -15,8 +15,15 @@ router.get('/', new Auth().m, async (ctx, next) => {
 
     const v = await new ReservationValidator().validate(ctx)
 
+    console.log("res")
+    console.log(ctx.auth)
+    // ctx.auth包含如下
+    // { uid: 'oM7cQ0c0lqcMLvdFxVuPdJkO_63M',
+    //   scope: 101,
+    //   iat: 1573614861,
+    //   exp: 1576206861 }
     ctx.body = ctx.auth.uid
-    // throw new Success("查询成功", 200)
+    
     
 })
 

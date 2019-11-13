@@ -22,7 +22,7 @@ const sequelize = new Sequelize(dbName, user, password, {
         // create_time update_time delete_time
         timestamps: true, // 表里的createdAt和updatedAt的自动生成来源 不控制delete_time建议存在 
         paranoid: true, // 生成delete_time
-        createdAt: 'created_time', // 重命名 更符合数据库命名规范
+        createdAt: 'created_at', // 重命名 更符合数据库命名规范
         underscored: true// 驼峰转成下划线
    }
 }) 

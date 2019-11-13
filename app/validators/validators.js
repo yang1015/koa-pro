@@ -108,10 +108,19 @@ class ReservationValidator extends LinValidator{
         super()
         // 查看我的所有预约
         // openid必填 token必填 
-        this.openid = [
-            new Rule('isLength', 'openid必填', {mix: 1})
-        ]
     } 
+}
+
+// 获取最近期刊的校验
+class ClassicValidator extends LinValidator {
+    constructor() {
+        super()
+        
+        // 0是句子 1是音乐 2是电影
+    
+    }
+
+     
 }
 
 
@@ -120,5 +129,6 @@ module.exports = {
     RegisterValidator, 
     TokenValidator, 
     TokenVerifyValidator,
-    ReservationValidator
+    ReservationValidator,
+    ClassicValidator
 }

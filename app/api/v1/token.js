@@ -48,7 +48,7 @@ async function getToken(type, data) {
         case LoginType.WECHAT_LOGIN: // 用微信接口返回
             const openId = await WxManager.code2Session(data.account) // 前端发来的code去获取openId
             const user = await User.getUserByOpenId(openId) // 拿到openId所以应的这个用户
-            return await generateToken(user.account, type) // 给这个用户当前登陆生成token令牌
+            return await generateToken(openId, type) // 给这个用户当前登陆生成token令牌
             break
         case LoginType.MOBILE_LOGIN:
             // 因为在Validator里已经判断过mobile+openid是否正确匹配了

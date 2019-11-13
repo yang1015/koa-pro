@@ -46,28 +46,25 @@ User.init({ // 两个参数 obj obj
     }, 
     openid: { // 最好是unionid（如果要公众号+小程序） 不然只有小程序里是唯一的
         type: Sequelize.STRING(64),
-        unique: true,
-        primaryKey: true, // 主键 不能重复 不能为空
-        // set(val) {
-        //     const salt = bcrypt.genSaltSync(10) // 10是密码加密所需要的成本
-        //     const openid = bcrypt.hashSync(val, salt)
-        //     this.setDataValue("openid", openid) // this是表示model里面的setDataValue方法
-        // }
-    },
-    mobile: {
-        type: Sequelize.STRING(64),
         unique: true
     },
     nickname: {
         type: Sequelize.STRING
     },
     age: Sequelize.INTEGER,
+    gender: Sequelize.INTEGER, // 0女 1男 -1未知
     city: Sequelize.STRING,
     avatarurl: Sequelize.STRING,
-    token: {
-        type: Sequelize.STRING(255),
+    mobile: {
+        type: Sequelize.STRING(64),
         unique: true
-    }
+    },
+    // token: {
+    //     type: Sequelize.STRING(255),
+    //     unique: true
+    // },
+    // registerTime: Sequelize.STRING,
+    // registerSource: Sequelize.INTEGER // 1是小程序
 }, { 
     sequelize: db, // 指定sequelize
     tableName: 'user' // 要小写。设置表的名字
