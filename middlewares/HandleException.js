@@ -7,7 +7,6 @@ const handleException = async function(ctx, next) {
     } catch(error) {
         const env = global.config.env
         const isHttpException = error instanceof HttpException
-        console.log(`${env}  ${isHttpException}`)
         // 生产环境 且不是自定义error的话 要释放程序的报错
         if (env === "dev" && !isHttpException) throw error  // 不需要else 因为只要throw了后面就都不会继续执行了
 

@@ -2,7 +2,7 @@ const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') //
 
 class Flow extends Model {
-   
+       
 }
 
 Flow.init({

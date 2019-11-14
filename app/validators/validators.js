@@ -4,6 +4,7 @@ const { LinValidator, Rule} = require('../../core/lin-validator2.js')
 const { User } = require('../models/user.js')
 const { LoginType } = require('./../helpers/enum.js')
 const { generateToken } = require('../../config/config.js')
+const { Sentence, Music, Movie } = require('../models/classic')
 
 
 class PositiveIntValidator extends LinValidator{
@@ -111,16 +112,57 @@ class ReservationValidator extends LinValidator{
     } 
 }
 
-// 获取最近期刊的校验
-class ClassicValidator extends LinValidator {
+class LikeValidator extends LinValidator {
     constructor() {
         super()
-        
-        // 0是句子 1是音乐 2是电影
+        // uid, artId, type
+        this.type = [
+            new Rule("isLength", "type必填", {min:1}),
+            new Rule('isInt', 'type传入有误', {min:0,max:2})
+        ] 
+        this.uid = [
+            new Rule("isLength", "uid必填", {min:1})
+        ]
+
+        this.art_id = [
+            new Rule("isLength", "art_id必填", {min:1})
+        ]
+    }
     
+    async validateUserId(vals) {
+        // check userId是否在数据库里
+        
+        const u = await User.findOne({
+            where: {
+                id: vals.body.uid
+            }
+        })
+            
+        if (!u) throw new Error("该用户不存在")   
     }
 
-     
+    async validateArtId(vals) {
+        const artId = vals.body.art_id
+        const type = vals.body.type
+
+        
+        const findArtId = {
+            where: {
+                id: artId
+            }
+        }
+        let ifFind = false;
+        switch (type) {
+            case 0: ifFind = await Sentence.findOne(findArtId); break
+            case 1: ifFind = await Music.findOne(findArtId); break
+            case 2: ifFind = await Movie.findOne(findArtId); break
+            default: 
+            return ifFind = Sentence.findOne(findArtId)
+        }
+         
+        if (!ifFind) throw new Error("找不到该artId")
+        // 是否在数据库里
+    }
 }
 
 
@@ -130,5 +172,5 @@ module.exports = {
     TokenValidator, 
     TokenVerifyValidator,
     ReservationValidator,
-    ClassicValidator
+    LikeValidator
 }

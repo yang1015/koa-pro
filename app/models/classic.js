@@ -1,8 +1,6 @@
 const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') //
 
-
-
 // sentence/music/movie公用的属性
 // sequelize必须使用init来进行初始化
 // Base.init({ 
@@ -44,7 +42,7 @@ class Music extends Model {
    
 }
 
-Music.init({...commonFields, musicurl: Sequelize.STRING}, {
+Music.init({...commonFields, url: Sequelize.STRING}, {
     sequelize: db, // 指定sequelize
     tableName: 'music' // 要小写。设置表的名字
 

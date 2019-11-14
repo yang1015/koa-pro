@@ -14,9 +14,6 @@ router.get('/', new Auth().m, async (ctx, next) => {
     // 返回ctx
 
     const v = await new ReservationValidator().validate(ctx)
-
-    console.log("res")
-    console.log(ctx.auth)
     // ctx.auth包含如下
     // { uid: 'oM7cQ0c0lqcMLvdFxVuPdJkO_63M',
     //   scope: 101,

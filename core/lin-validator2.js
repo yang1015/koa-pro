@@ -66,8 +66,10 @@ class LinValidator {
     }
 
     async validate(ctx, alias = {}) {
+       
         this.alias = alias
         let params = this._assembleAllParams(ctx)
+         
         this.data = cloneDeep(params)
         this.parsed = cloneDeep(params)
 
@@ -79,16 +81,18 @@ class LinValidator {
       
         // const map = new Map(memberKeys)
         for (let key of memberKeys) {
-       
+            
             const result = await this._check(key, alias)
-
+            
            
             if (!result.success) {
                 errorMsgs.push(result.msg)
             }
         }
         
+
         if (errorMsgs.length != 0) {
+             
             throw new ParameterException(errorMsgs)
         }
         ctx.v = this

@@ -16,7 +16,7 @@ const sequelize = new Sequelize(dbName, user, password, {
    dialect: 'mysql',
    host,
    port,
-//    logging: true, // 默认是true 显示Sql操作
+   logging: false, // 默认是true 显示Sql操作
    timezone: '+08:00',
    define: {
         // create_time update_time delete_time

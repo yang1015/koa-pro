@@ -35,9 +35,8 @@ router.post('/verify', async(ctx) => {
     const token = v.get('body.token')
     const res = await Auth.verifyToken(token)
     ctx.body = {
-        result: res
+        isValid: res
     }
-    
 })
 
 // 根据不同登录方式获取不同的token

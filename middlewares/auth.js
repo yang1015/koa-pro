@@ -25,8 +25,6 @@ class Auth {
                 throw new ForbiddenException("token不合法")
            }
 
-           console.log(decode)
-
            ctx.auth = {
                uid: decode.uid,
                scope: decode.scope
@@ -38,8 +36,6 @@ class Auth {
 
     static async verifyToken(token) {
         try {
-            console.log("//////token: /////")
-            console.log(token.name)
              jwt.verify(token, global.config.security.secretKey)
              return true
         } catch(err) {

@@ -45,11 +45,31 @@ class AuthFailedException extends HttpException {
     }
 }
 
+// 5000开头数据库问题
+class DuplicatedDataException extends HttpException {
+    constructor(msg, errorCode, code) {
+        super()
+        this.code = code || 202 //重复插入数据
+        this.errorCode = errorCode || 50001
+        this.msg = msg || "数据已存在，请勿重复插入"
+    }
+}
+
+class notExsitsException extends HttpException {
+    constructor(msg, errorCode, code) {
+        super()
+        this.code = code || 202 //重复插入数据
+        this.errorCode = errorCode || 50002
+        this.msg = msg || "该数据不存在，无法操作"
+    }
+}
+
 module.exports = {
     HttpException, 
     ParameterException, 
     ForbiddenException,
     Success,
-    AuthFailedException
-    
+    AuthFailedException,
+    DuplicatedDataException,
+    notExsitsException
 }
