@@ -118,28 +118,23 @@ class LikeValidator extends LinValidator {
         // uid, artId, type
         this.type = [
             new Rule("isLength", "type必填", {min:1}),
-            new Rule('isInt', 'type传入有误', {min:0,max:2})
+            new Rule('isInt', 'type传入有误', {min:0, max:2})
         ] 
-        this.uid = [
-            new Rule("isLength", "uid必填", {min:1})
-        ]
 
         this.art_id = [
             new Rule("isLength", "art_id必填", {min:1})
         ]
     }
     
-    async validateUserId(vals) {
-        // check userId是否在数据库里
-        
-        const u = await User.findOne({
-            where: {
-                id: vals.body.uid
-            }
-        })
-            
-        if (!u) throw new Error("该用户不存在")   
-    }
+    // async validateUserId(vals) {
+    //     // check userId是否在数据库里
+    //     const u = await User.findOne({
+    //         where: {
+    //             id: vals.body.uid
+    //         }
+    //     })    
+    //     if (!u) throw new Error("该用户不存在")   
+    // }
 
     async validateArtId(vals) {
         const artId = vals.body.art_id

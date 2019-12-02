@@ -6,7 +6,7 @@ const HandleException = require('./middlewares/HandleException.js')
 
 const app = new Koa(); // 应用程序对象 有很多中间件
 
-require('./app/models/user.js')
+require('./app/models/classic')
 
 app.use(parser()) // ctx.body插件
 app.use(HandleException)

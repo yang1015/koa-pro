@@ -49,8 +49,8 @@ class AuthFailedException extends HttpException {
 class DuplicatedDataException extends HttpException {
     constructor(msg, errorCode, code) {
         super()
-        this.code = code || 202 //重复插入数据
-        this.errorCode = errorCode || 50001
+        this.code = code || 400
+        this.errorCode = errorCode || 50001  //重复插入数据
         this.msg = msg || "数据已存在，请勿重复插入"
     }
 }
@@ -58,8 +58,8 @@ class DuplicatedDataException extends HttpException {
 class notExsitsException extends HttpException {
     constructor(msg, errorCode, code) {
         super()
-        this.code = code || 202 //重复插入数据
-        this.errorCode = errorCode || 50002
+        this.code = code || 400  
+        this.errorCode = errorCode || 50002 // 数据不存在
         this.msg = msg || "该数据不存在，无法操作"
     }
 }
