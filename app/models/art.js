@@ -1,14 +1,13 @@
 const { Sentence, Music, Movie } = require('./classic.js')
 const { Like } = require('./like.js')
  
+// 这个类主要是为了编写这个静态方法来提取每一个art实例
 class Art {
-    constructor() {
-
-    }
     static async getArt(type, artId) {
         const finder = {
             where: {
-                id: artId //为什么不是art_id 因为在music/sentence表里id就是他们的artId
+                id: artId 
+                //为什么不是art_id 因为在music/sentence表里id就是他们的artId
             }
         }
         let art;
@@ -21,8 +20,6 @@ class Art {
         }       
         return art
     }
-
-    
 }
 
 module.exports = { Art }

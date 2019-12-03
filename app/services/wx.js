@@ -5,7 +5,7 @@ const { User } = require('../models/user.js')
 class WxManager {
     constructor() { }
 
-    static async code2Session(code) {
+    static async code2OpenId(code) {
         const url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + global.config.wechatSettings.appId + '&secret='+ global.config.wechatSettings.appSecret + '&js_code=' + code + '&grant_type=authorization_code'
         const res = await axios.get(url)
         if (res.status !== 200) throw new AuthFailedException("openid获取失败")

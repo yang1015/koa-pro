@@ -1,7 +1,5 @@
 const { db } = require('../../core/db.js') // 实例
 const { Sequelize, Model }  = require('sequelize') 
-
-
 const { 
     DuplicatedDataException, 
     notExsitsException 
@@ -32,9 +30,7 @@ class Like extends Model {
                 art_id,
                 type
             }
-        })
-       
-        
+        }) 
        
         if (like) throw new DuplicatedDataException()     
         // transaction的结果一定要点赞  
@@ -46,35 +42,35 @@ class Like extends Model {
             }, { 
                 transaction: t
             })
-            console.log(Art)
-            console.log(await Art.getArt)
-            // const art = await Art.getArt(type, artId)
-            // await art.increment(
-            //     'fav_nums', { 
-            //         by: 1, 
-            //         transaction: t
-            // })  // 这个art的fav_nums上更新
-         })      
-        }
+    
+            const art = await Art.getArt(type, art_id)
+            await art.increment(
+                'fav_nums', { 
+                    by: 1, 
+                    transaction: t
+            })  // 这个art的fav_nums上更新
+        })      
+    }
 
-    static async dislike(uid, artId, type) {
+    static async dislike(uid, art_id, type) {
         const { Art } = require('./art')
         const data = await Like.findOne({ 
             where: {
                 uid: uid,
-                art_id: artId, 
+                art_id: art_id, 
                 type: type
             }
         })
-        console.log(data)
+        
         if (!data)  throw new notExsitsException()
         
+         // 删掉找到的那一条
         return db.transaction(async t => {
             await data.destroy({
                force: true, // true是物理删除 false是软删除 不会真的删除 但是有了deleted_at
                transaction: t
             })
-            const art = await Art.getArt(type, artId)
+            const art = await Art.getArt(type, art_id)
             await art.decrement(
                 'fav_nums', { 
                     by: 1, 

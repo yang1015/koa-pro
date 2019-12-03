@@ -7,10 +7,12 @@ const handleException = async function(ctx, next) {
     } catch(error) {
         const env = global.config.env
         const isHttpException = error instanceof HttpException
+    
         // 生产环境 且不是自定义error的话 要释放程序的报错
-        if (env === "dev" && !isHttpException) throw error  // 不需要else 因为只要throw了后面就都不会继续执行了
+        if (env === "dev" && !isHttpException) throw error  
+        // 不需要else 因为只要throw了后面就都不会继续执行了
 
-        // 自定义error 
+        // 是自定义error 
         if (isHttpException) { 
             ctx.body = {
                 errorCode: error.errorCode,
@@ -19,6 +21,7 @@ const handleException = async function(ctx, next) {
             }
             ctx.status = error.code
         } else {
+            console.log("不是")
             // 未知错误
             ctx.body = {
                 errorCode: 999,

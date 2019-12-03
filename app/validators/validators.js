@@ -60,8 +60,8 @@ class TokenValidator extends LinValidator{
     // 登录方式使用枚举 必须在规定的方式之内
     constructor() {
         super() // 务必要先super!!!!
-        this.account = [
-            new Rule('isLength', 'account是必传项', {min: 1})
+        this.code = [
+            new Rule('isLength', 'code是必传项', {min: 1})
         ]
     }
 
@@ -76,7 +76,6 @@ class TokenValidator extends LinValidator{
                 break
             case LoginType.WECHAT_LOGIN:
                 // 传入code和登录类型type
-               
                 break
             case LoginType.MOBILE_LOGIN:
                 // 微信登录 openid + mobile
@@ -125,16 +124,6 @@ class LikeValidator extends LinValidator {
             new Rule("isLength", "art_id必填", {min:1})
         ]
     }
-    
-    // async validateUserId(vals) {
-    //     // check userId是否在数据库里
-    //     const u = await User.findOne({
-    //         where: {
-    //             id: vals.body.uid
-    //         }
-    //     })    
-    //     if (!u) throw new Error("该用户不存在")   
-    // }
 
     async validateArtId(vals) {
         const artId = vals.body.art_id
@@ -159,7 +148,6 @@ class LikeValidator extends LinValidator {
         // 是否在数据库里
     }
 }
-
 
 module.exports = { 
     PositiveIntValidator, 

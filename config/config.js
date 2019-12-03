@@ -7,9 +7,10 @@ module.exports = {
         user: 'root',
         password: '123456'
     },
+    // 加密
     security: {
         secretKey: 'littledesk',
-        expiresIn: 60*60*24*30 // 1小时后过期
+        expiresIn: 60*60*24 // 1天后过期
     },
     wechatSettings: {
         appId:'wx2ab0fb1b297e0995',
