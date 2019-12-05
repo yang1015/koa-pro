@@ -55,7 +55,7 @@ class RegisterValidator extends LinValidator {
 
 }
 
-class TokenValidator extends LinValidator{
+class LoginTypeValidator extends LinValidator{
     // 登录方式 1. 小程序/微信端 (acc) 2. web端 (acc+pwd)
     // 登录方式使用枚举 必须在规定的方式之内
     constructor() {
@@ -149,11 +149,22 @@ class LikeValidator extends LinValidator {
     }
 }
 
+class EmptyValidator extends LinValidator{
+    constructor() {
+        super()
+        this.id = [
+            new Rule("isLength", "必填", {min: 1})
+        ]
+         
+    }
+}
+
 module.exports = { 
     PositiveIntValidator, 
     RegisterValidator, 
-    TokenValidator, 
+    LoginTypeValidator, 
     TokenVerifyValidator,
     ReservationValidator,
-    LikeValidator
+    LikeValidator,
+    EmptyValidator
 }

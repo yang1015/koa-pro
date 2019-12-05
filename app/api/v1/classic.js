@@ -2,12 +2,15 @@ const Router = require('koa-router')
 const router = new Router({
     prefix: '/v1/classic'
 })
-const { Auth } = require('../../../middlewares/auth.js')
-const { LikeValidator } = require('../../validators/validators.js')
-const { ParameterException } = require('../../../core/HttpException')
-const { Flow } = require('../../models/flow.js')
-const { Art } = require('../../models/art.js')
-const { Like } = require('../../models/like.js')
+const { Auth } = require('@middlewares/auth.js')
+const { LikeValidator, PositiveIntValidator } = require('@validators/validators.js')
+const { 
+    ParameterException,
+    notExsitsException 
+} = require('@core/HttpException')
+const { Flow } = require('@models/flow.js')
+const { Art } = require('@models/art.js')
+const { Like } = require('@models/like.js')
 
 router.get('/latest', new Auth().m, async(ctx, next) => {
     // 先写使用中间件看是否传了token
@@ -20,16 +23,11 @@ router.get('/latest', new Auth().m, async(ctx, next) => {
                 ['index', 'DESC'] // 按照index的大小 倒叙排列 拿到index最大的那个
             ]
         })
-         
          // flow和art返回的东西都要 两个表的结果合并 
-        const art = await Art.getArt(flow.type, flow.art_id) // 返回的是类 而不是直接能.新属性的那种简单obj 
         const uid = ctx.auth.uid
-        const ifUserLiked = await Like.getIfLike(uid, flow.art_id, flow.type) 
-        // 给art新增属性
-        art.setDataValue("index", flow.index)
-        art.setDataValue("liked", ifUserLiked == 1? true : false)
+        const art = await Art.getArt(uid, flow.type, flow.art_id, flow.index) // 返回的是类 而不是直接能.新属性的那种简单obj 
+      
         ctx.body = art
-   
     // 在flow中找index最大的 取他的artId 和 type
     // 然后再对应的type表里取回数据 那music表里本来也没写id 是如何对应artid的
 })
@@ -59,6 +57,44 @@ router.post('/dislikeArt', new Auth().m, async(ctx, next) => {
     ctx.body = {
         data: '已删除'
     }
+})
+
+// 获取当前一期的前一期
+// 记录每次获取的index
+router.get('/:index/getPrevious', new Auth().m, async (ctx, next) => {
+    // 当前的index - 1
+    const v = await new PositiveIntValidator().validate(ctx, { id: 'index' })
+    const index = v.get('path.index')
+    const flow = await Flow.findOne({
+        where: { index }
+    })
+
+    if (!flow) throw new notExsitsException()
+    const uid = ctx.auth.uid
+    const art = await Art.getArt(uid, flow.type, flow.art_id, flow.index, useScope = true)
+   
+    // const ifUserLiked = await Like.getIfLike(uid, flow.art_id, flow.type) 
+    // // 给art新增属性
+    // art.setDataValue("index", index)
+    // art.setDataValue("liked", ifUserLiked == 1? true : false)
+    ctx.body = art
+    // 返回内容
+   
+})
+
+router.get('/:index/getNext', new Auth().m, async (ctx, next) => {
+    const v = await new PositiveIntValidator().validate(ctx, { id: 'index' })
+    const index = v.get('path.index')
+    const flow = await Flow.findOne({
+        where: {
+            index
+        }
+    })
+    if (!flow) throw new notExsitsException()
+    const uid = ctx.auth.uid
+    const art = await Art.getArt(uid, flow.type, flow.art_id, flow.index, useScope = true)
+  
+    ctx.body = art
 })
 
 module.exports = router

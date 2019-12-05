@@ -1,9 +1,12 @@
+require('module-alias/register') // 别名
+
 const Koa = require('koa')
 const axios = require('axios')
 const parser = require('koa-bodyparser') // 接口中取body需要依赖中间件
 
 const InitManager = require('./core/InitManager') // 引入类
 const HandleException = require('./middlewares/HandleException.js')
+
 
 const app = new Koa(); // 应用程序对象 有很多中间件
 

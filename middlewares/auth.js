@@ -27,7 +27,6 @@ class Auth {
                 else throw new ForbiddenException("token不合法")
            }
 
-          
            ctx.auth = {
                uid: decode.uid,
                scope: decode.scope

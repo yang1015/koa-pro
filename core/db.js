@@ -23,7 +23,21 @@ const sequelize = new Sequelize(dbName, user, password, {
         timestamps: true, // 表里的createdAt和updatedAt的自动生成来源 不控制delete_time建议存在 
         paranoid: true, // 生成delete_time
         createdAt: 'created_at', // 重命名 更符合数据库命名规范
-        underscored: true// 驼峰转成下划线
+        updatedAt: 'updated_at',
+        deletedAt: 'deleted_at',
+        underscored: true, // 驼峰转成下划线
+        scopes: {
+            bh: {
+                attributes: {
+                    exclude: [
+                        'updated_at',
+                        'deleted_at',
+                        'created_at'
+                    ]
+                }
+
+            }
+        }
    }
 }) 
 

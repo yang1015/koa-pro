@@ -43,7 +43,7 @@ class Like extends Model {
                 transaction: t
             })
     
-            const art = await Art.getArt(type, art_id)
+            const art = await Art.getArt(type, art_id, false)
             await art.increment(
                 'fav_nums', { 
                     by: 1, 
@@ -70,7 +70,7 @@ class Like extends Model {
                force: true, // true是物理删除 false是软删除 不会真的删除 但是有了deleted_at
                transaction: t
             })
-            const art = await Art.getArt(type, art_id)
+            const art = await Art.getArt(type, art_id, false)
             await art.decrement(
                 'fav_nums', { 
                     by: 1, 

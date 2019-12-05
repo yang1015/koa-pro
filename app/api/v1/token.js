@@ -2,7 +2,7 @@ const Router = require('koa-router')
 const router = new Router({
     prefix: '/v1/token'
 })
-const { TokenValidator, TokenVerifyValidator }  = require('../../validators/validators.js')
+const { LoginTypeValidator, TokenVerifyValidator }  = require('../../validators/validators.js')
 const { Success } = require('../../../core/HttpException')
 const { LoginType } = require('./../../helpers/enum.js')
 const { generateToken } = require('./../../../core/util.js')
@@ -15,7 +15,7 @@ router.post('/', async(ctx) => {
         // 再校验参数 
         // 如果是新增数据 就把数据收集起来用model搞一哈生成一个新实例放进数据库
         // 都没问题了就throw success
-        const v = await new TokenValidator().validate(ctx)
+        const v = await new LoginTypeValidator().validate(ctx)
         
         // 参数校验完毕
         // 需要根据类型 去再次获取这个用户实例 再生成token返回给他
@@ -45,7 +45,7 @@ async function getToken(type, data) {
         case LoginType.ACCPWD_LOGIN:
             break
         case LoginType.WECHAT_LOGIN: // 用微信接口返回
-            console.log(Auth.USER)
+    
             const openId = await WxManager.code2OpenId(data.code) // 前端发来的code去获取openId
 
             // 用获取的openId来新建openId和token的匹配或是更新

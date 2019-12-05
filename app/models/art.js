@@ -3,7 +3,7 @@ const { Like } = require('./like.js')
  
 // 这个类主要是为了编写这个静态方法来提取每一个art实例
 class Art {
-    static async getArt(type, artId) {
+    static async getArt(uid, type, artId, flowIndex, useScope = true) {
         const finder = {
             where: {
                 id: artId 
@@ -11,13 +11,20 @@ class Art {
             }
         }
         let art;
+        const scope = useScope? "bh" : null
         switch (type) {
-            case 0: art = await Sentence.findOne(finder); break
-            case 1: art = await Music.findOne(finder); break
-            case 2: art = await Movie.findOne(finder); break
+            case 0: art = await Sentence.scope(scope).findOne(finder); break
+            case 1: art = await Music.scope(scope).findOne(finder); break
+            case 2: art = await Movie.scope(scope).findOne(finder); break
             default: 
-                art = await Sentence.findOne(finder)
+                art = await Sentence.scope(scope).findOne(finder)
         }       
+
+        const ifUserLiked = await Like.getIfLike(uid, artId, type) 
+     
+        // 给art新增属性
+        art.setDataValue("index", flowIndex)
+        art.setDataValue("liked", ifUserLiked == 1? true : false)
         return art
     }
 }
