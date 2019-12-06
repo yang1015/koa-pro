@@ -22,7 +22,7 @@ class Like extends Model {
         else return 0
     }   
 
-    static async like(uid, art_id, type) {
+    static async like(uid, art_id, type, flow_index) {
         const { Art } = require('./art')
         const like = await Like.findOne({ 
             where: {
@@ -42,8 +42,8 @@ class Like extends Model {
             }, { 
                 transaction: t
             })
-    
-            const art = await Art.getArt(type, art_id, false)
+            
+            const art = await Art.getArt(uid, type, art_id, flow_index, false)
             await art.increment(
                 'fav_nums', { 
                     by: 1, 
@@ -52,7 +52,7 @@ class Like extends Model {
         })      
     }
 
-    static async dislike(uid, art_id, type) {
+    static async dislike(uid, art_id, type, flow_index) {
         const { Art } = require('./art')
         const data = await Like.findOne({ 
             where: {
@@ -70,7 +70,7 @@ class Like extends Model {
                force: true, // true是物理删除 false是软删除 不会真的删除 但是有了deleted_at
                transaction: t
             })
-            const art = await Art.getArt(type, art_id, false)
+            const art = await Art.getArt(uid, type, art_id, flow_index, false)
             await art.decrement(
                 'fav_nums', { 
                     by: 1, 

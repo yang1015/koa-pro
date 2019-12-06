@@ -32,19 +32,30 @@ router.get('/latest', new Auth().m, async(ctx, next) => {
     // 然后再对应的type表里取回数据 那music表里本来也没写id 是如何对应artid的
 })
 
-// 新增点赞uid+artId+type
-router.post('/likeArt', new Auth().m, async(ctx, next) => {
+// 点赞
+router.post('/:index/likeArt', new Auth().m, async(ctx, next) => {
     // 先token校验
     // 需要userId, artId, type
-    const v = await new LikeValidator().validate(ctx)  // 如果没问题 这里开始组合一条Like数据 并插入Like表
-    const data = v.get('body')
+    const v = await new PositiveIntValidator().validate(ctx, {id: 'index'})  // 如果没问题 这里开始组合一条Like数据 并插入Like表
+
+    // 传入flow index 用flow index去找art 并点赞
     const uid = ctx.auth.uid // 在执行Auth().m的时候已经把uid放在了ctx上下文里了 所以可以直接获取
-    await Like.like(uid, data.art_id, data.type)
+    const index = v.get('path.index')
+
+    const flow = await Flow.findOne({
+        where: {
+            index
+        }
+    })
+   
+    console.log(flow.art_id, " ",flow.type)
+    await Like.like(uid, flow.art_id, flow.type, index)
     ctx.body = {
         data: '更新完毕'
     }
 })
 
+// 取消赞
 router.post('/dislikeArt', new Auth().m, async(ctx, next) => {
     // 先token校验
     // 需要userId, artId, type
@@ -60,7 +71,6 @@ router.post('/dislikeArt', new Auth().m, async(ctx, next) => {
 })
 
 // 获取当前一期的前一期
-// 记录每次获取的index
 router.get('/:index/getPrevious', new Auth().m, async (ctx, next) => {
     // 当前的index - 1
     const v = await new PositiveIntValidator().validate(ctx, { id: 'index' })
@@ -68,6 +78,9 @@ router.get('/:index/getPrevious', new Auth().m, async (ctx, next) => {
     const flow = await Flow.findOne({
         where: { index }
     })
+
+    console.log("flow前一期")
+    console.log(flow)
 
     if (!flow) throw new notExsitsException()
     const uid = ctx.auth.uid
@@ -78,10 +91,10 @@ router.get('/:index/getPrevious', new Auth().m, async (ctx, next) => {
     // art.setDataValue("index", index)
     // art.setDataValue("liked", ifUserLiked == 1? true : false)
     ctx.body = art
-    // 返回内容
-   
+    // 返回内容 
 })
 
+// 获取当前一期的下一期
 router.get('/:index/getNext', new Auth().m, async (ctx, next) => {
     const v = await new PositiveIntValidator().validate(ctx, { id: 'index' })
     const index = v.get('path.index')
@@ -96,5 +109,43 @@ router.get('/:index/getNext', new Auth().m, async (ctx, next) => {
   
     ctx.body = art
 })
+
+// 获取点赞信息
+router.get('/:type/:id/like', new Auth().m, async (ctx, next) => {
+    const v = await new LikeValidator().validate(ctx, {
+        art_id: 'id'
+    })
+
+    
+})
+
+router.get('/getAllLikes', new Auth().m, async (ctx, next) => {
+    // uid => all art in Arr
+    const uid = ctx.auth.uid
+    // 到like表里找uid为当前id的
+    const likes = await Like.findAll({
+        where: {
+            uid
+        }
+    })
+
+    // 用type和artId去找具体每一个art
+    let arr = []
+    for (let i = 0; i < likes.length; i++) {
+        const flow = await Flow.findOne({
+            where: {
+                art_id: likes[i].art_id,
+                type: likes[i].type
+            }
+        })
+        const art = await Art.getArt(uid, likes[i].type, likes[i].art_id, flow.index, useScope = true)
+        arr.push(art)
+    }
+
+    ctx.body = {
+        data: arr
+    }
+})
+ 
 
 module.exports = router

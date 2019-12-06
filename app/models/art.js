@@ -21,10 +21,15 @@ class Art {
         }       
 
         const ifUserLiked = await Like.getIfLike(uid, artId, type) 
-     
+        if (ifUserLiked) {
+            art.setDataValue("index", flowIndex)
+            art.setDataValue("liked", ifUserLiked == 1? true : false)
+        } else {
+            art.setDataValue("index", flowIndex)
+            art.setDataValue("liked", false)
+        }
         // 给art新增属性
-        art.setDataValue("index", flowIndex)
-        art.setDataValue("liked", ifUserLiked == 1? true : false)
+       
         return art
     }
 }

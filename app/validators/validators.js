@@ -115,14 +115,16 @@ class LikeValidator extends LinValidator {
     constructor() {
         super()
         // uid, artId, type
-        this.type = [
-            new Rule("isLength", "type必填", {min:1}),
-            new Rule('isInt', 'type传入有误', {min:0, max:2})
-        ] 
+        // this.type = [
+        //     new Rule("isLength", "type必填", {min:1}),
+        //     new Rule('isInt', 'type传入有误', {min:0, max:2})
+        // ] 
 
-        this.art_id = [
-            new Rule("isLength", "art_id必填", {min:1})
-        ]
+        // this.art_id = [
+        //     new Rule("isLength", "art_id必填", {min:1})
+        // ]
+
+        
     }
 
     async validateArtId(vals) {
