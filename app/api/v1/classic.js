@@ -3,7 +3,11 @@ const router = new Router({
     prefix: '/v1/classic'
 })
 const { Auth } = require('@middlewares/auth.js')
-const { LikeValidator, PositiveIntValidator } = require('@validators/validators.js')
+const { 
+    LikeValidator, 
+    PositiveIntValidator,
+    ClassicValidator
+} = require('@validators/validators.js')
 const { 
     ParameterException,
     notExsitsException 
@@ -79,9 +83,6 @@ router.get('/:index/getPrevious', new Auth().m, async (ctx, next) => {
         where: { index }
     })
 
-    console.log("flow前一期")
-    console.log(flow)
-
     if (!flow) throw new notExsitsException()
     const uid = ctx.auth.uid
     const art = await Art.getArt(uid, flow.type, flow.art_id, flow.index, useScope = true)
@@ -106,46 +107,40 @@ router.get('/:index/getNext', new Auth().m, async (ctx, next) => {
     if (!flow) throw new notExsitsException()
     const uid = ctx.auth.uid
     const art = await Art.getArt(uid, flow.type, flow.art_id, flow.index, useScope = true)
-  
     ctx.body = art
 })
 
-// 获取点赞信息
-router.get('/:type/:id/like', new Auth().m, async (ctx, next) => {
-    const v = await new LikeValidator().validate(ctx, {
-        art_id: 'id'
-    })
-
-    
-})
-
-router.get('/getAllLikes', new Auth().m, async (ctx, next) => {
-    // uid => all art in Arr
+// 获取点赞期刊的具体内容
+// 是在点击渲染出的所有点赞的内容的页面， 每个期刊都自带了flow_index和type，
+// 所以直接用这两个即可
+router.get('/:type/:art_id/like', new Auth().m, async (ctx, next) => {
+    const v = await new ClassicValidator().validate(ctx,{id: 'art_id'})
+    const art_id = v.get('path.art_id')
+    const type = v.get('path.type')
     const uid = ctx.auth.uid
-    // 到like表里找uid为当前id的
-    const likes = await Like.findAll({
+ 
+    const flow = await Flow.findOne({
         where: {
-            uid
+            type,
+            art_id
         }
     })
-
-    // 用type和artId去找具体每一个art
-    let arr = []
-    for (let i = 0; i < likes.length; i++) {
-        const flow = await Flow.findOne({
-            where: {
-                art_id: likes[i].art_id,
-                type: likes[i].type
-            }
-        })
-        const art = await Art.getArt(uid, likes[i].type, likes[i].art_id, flow.index, useScope = true)
-        arr.push(art)
-    }
+    
+    if (!flow) throw new notExsitsException()
+    const art = await Art.getArt(uid, type, art_id, flow.index, true)
 
     ctx.body = {
-        data: arr
+        data: art
+    }  
+})
+
+// 获取我喜欢的期刊
+router.get('/getAllLikes', new Auth().m, async (ctx, next) => {
+    const uid = ctx.auth.uid
+    const likedArtArr = await Art.getAllLikedArt(uid)
+    ctx.body = {
+        data: likedArtArr
     }
 })
  
-
 module.exports = router

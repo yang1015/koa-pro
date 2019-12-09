@@ -111,43 +111,45 @@ class ReservationValidator extends LinValidator{
     } 
 }
 
-class LikeValidator extends LinValidator {
+class LikeValidator extends PositiveIntValidator {
     constructor() {
         super()
         // uid, artId, type
-        // this.type = [
-        //     new Rule("isLength", "type必填", {min:1}),
-        //     new Rule('isInt', 'type传入有误', {min:0, max:2})
-        // ] 
-
-        // this.art_id = [
-        //     new Rule("isLength", "art_id必填", {min:1})
-        // ]
-
-        
+        this.type = [
+            new Rule("isLength", "type必填", {min:1}),
+        ]
     }
 
-    async validateArtId(vals) {
-        const artId = vals.body.art_id
-        const type = vals.body.type
+    // 不需要 用art id+type去找Art找不到不就得了，不需要先判断Artid是不是存在
+    // async validateArtId(vals) {
+    //     console.log("vals")
+    //     console.log(vals)
+    //     const artId = vals.body.art_id
+    //     const type = vals.body.type
 
         
-        const findArtId = {
-            where: {
-                id: artId
-            }
-        }
-        let ifFind = false;
-        switch (type) {
-            case 0: ifFind = await Sentence.findOne(findArtId); break
-            case 1: ifFind = await Music.findOne(findArtId); break
-            case 2: ifFind = await Movie.findOne(findArtId); break
-            default: 
-            return ifFind = Sentence.findOne(findArtId)
-        }
+    //     const findArtId = {
+    //         where: {
+    //             id: artId
+    //         }
+    //     }
+    //     let ifFind = false;
+    //     switch (type) {
+    //         case 0: ifFind = await Sentence.findOne(findArtId); break
+    //         case 1: ifFind = await Music.findOne(findArtId); break
+    //         case 2: ifFind = await Movie.findOne(findArtId); break
+    //         default: 
+    //         return ifFind = Sentence.findOne(findArtId)
+    //     }
          
-        if (!ifFind) throw new Error("找不到该artId")
-        // 是否在数据库里
+    //     if (!ifFind) throw new Error("找不到该artId")
+    //     // 是否在数据库里
+    // }
+}
+
+class ClassicValidator extends LikeValidator{
+    constructor() {
+        super()
     }
 }
 
@@ -168,5 +170,6 @@ module.exports = {
     TokenVerifyValidator,
     ReservationValidator,
     LikeValidator,
-    EmptyValidator
+    EmptyValidator,
+    ClassicValidator
 }

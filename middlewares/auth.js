@@ -21,7 +21,6 @@ class Auth {
            if (!token || !token.name) throw new ForbiddenException("token为必填项")
            try {    
                decode = jwt.verify(token.name, global.config.security.secretKey) // 校验令牌
-               console.log(decode)
            } catch(error) {
                 if (error.name == "TokenExpiredError") throw new ForbiddenException("令牌过期")
                 else throw new ForbiddenException("token不合法")

@@ -79,6 +79,8 @@ class Like extends Model {
                 // 这个art的fav_nums上更新
             })      
     } 
+
+   
 }
 
 Like.init({
